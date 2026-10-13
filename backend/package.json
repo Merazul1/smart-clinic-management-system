@@ -2,12 +2,6 @@
   "name": "smart-clinic-backend",
   "version": "1.0.0",
   "description": "Multi-Tenant Smart Clinic Management System Backend API",
-  "author": "Merazul Khan (https://github.com/Merazul1)",
-  "homepage": "https://github.com/Merazul1",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Merazul1/smart-clinic-management-system.git"
-  },
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",

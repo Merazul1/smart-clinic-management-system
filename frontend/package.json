@@ -2,12 +2,6 @@
   "name": "smart-clinic-frontend",
   "private": true,
   "version": "1.0.0",
-  "author": "Merazul Khan (https://github.com/Merazul1)",
-  "homepage": "https://github.com/Merazul1",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Merazul1/smart-clinic-management-system.git"
-  },
   "type": "module",
   "scripts": {
     "dev": "vite",

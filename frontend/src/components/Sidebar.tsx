@@ -81,31 +81,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </div>
 
-      <div className="space-y-2 mt-4">
-        {/* Role Indicator Card */}
-        <div className="p-3 bg-gradient-to-br from-slate-50 to-teal-50/40 rounded-xl border border-slate-200/80 text-xs">
-          <div className="flex items-center gap-2 text-teal-800 font-semibold mb-1">
-            <ShieldCheck className="w-4 h-4 text-teal-600" />
-            <span>Active Role Access</span>
-          </div>
-          <p className="text-slate-500 text-[11px] leading-relaxed">
-            Logged in as <strong className="text-slate-700">{userRole}</strong>. HIPAA & multi-tenant scoped.
-          </p>
+      {/* Role Indicator Card */}
+      <div className="p-3 bg-gradient-to-br from-slate-50 to-teal-50/40 rounded-xl border border-slate-200/80 text-xs">
+        <div className="flex items-center gap-2 text-teal-800 font-semibold mb-1">
+          <ShieldCheck className="w-4 h-4 text-teal-600" />
+          <span>Active Role Access</span>
         </div>
-
-        {/* Developer Attribution Card */}
-        <a
-          href="https://github.com/Merazul1"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block p-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs transition group shadow-xs"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-teal-400 font-bold uppercase tracking-wider">Lead Developer</span>
-            <span className="text-[10px] text-slate-400 group-hover:text-teal-300">@Merazul1 →</span>
-          </div>
-          <p className="font-semibold text-slate-100 text-xs mt-0.5">Merazul Khan</p>
-        </a>
+        <p className="text-slate-500 text-[11px] leading-relaxed">
+          Logged in as <strong className="text-slate-700">{userRole}</strong>. HIPAA & multi-tenant scoped.
+        </p>
       </div>
     </aside>
   );

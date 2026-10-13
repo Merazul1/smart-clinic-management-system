@@ -2,12 +2,6 @@
   "name": "smart-clinic-management-system",
   "version": "1.0.0",
   "description": "Multi-Tenant Smart Clinic Management Platform",
-  "author": "Merazul Khan (https://github.com/Merazul1)",
-  "homepage": "https://github.com/Merazul1",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Merazul1/smart-clinic-management-system.git"
-  },
   "scripts": {
     "install:all": "npm --prefix backend install && npm --prefix frontend install",
     "db:init": "npm --prefix backend run prisma:push && npm --prefix backend run seed",

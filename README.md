@@ -1,17 +1,6 @@
 # 🩺 CuraPulse - Smart Clinic Management Platform (Multi-Tenant SaaS)
 
-[![Author](https://img.shields.io/badge/Author-Merazul%20Khan-0d9488?style=flat&logo=github)](https://github.com/Merazul1)
-[![GitHub Profile](https://img.shields.io/badge/GitHub-@Merazul1-181717?style=flat&logo=github)](https://github.com/Merazul1)
-[![Platform](https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20Prisma%20%7C%20Tailwind-blue)](https://github.com/Merazul1)
-
 A complete, production-grade clinic management SaaS platform designed for healthcare clinics, polyclinics, diagnostic centers, and freelance software clients.
-
----
-
-## 👨‍💻 Author & Maintainer
-- **Developer**: **Merazul Khan**
-- **GitHub Profile**: [@Merazul1](https://github.com/Merazul1)
-- **Repository**: [https://github.com/Merazul1/smart-clinic-management-system](https://github.com/Merazul1/smart-clinic-management-system)
 
 ---
 
