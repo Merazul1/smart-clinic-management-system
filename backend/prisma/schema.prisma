@@ -1,0 +1,229 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Clinic {
+  id                 String             @id @default(uuid())
+  name               String
+  slug               String             @unique
+  phone              String
+  email              String
+  address            String
+  city               String?
+  country            String?            @default("India")
+  currency           String             @default("₹")
+  taxRate            Float              @default(5.0)
+  logo               String?
+  subscriptionPlan   String             @default("PRO") // STARTER, PRO, ENTERPRISE
+  subscriptionStatus String             @default("ACTIVE") // TRIAL, ACTIVE, PAST_DUE, CANCELLED
+  trialEndsAt        DateTime?
+  users              User[]
+  patients           Patient[]
+  doctorProfiles     DoctorProfile[]
+  appointments       Appointment[]
+  prescriptions      Prescription[]
+  invoices           Invoice[]
+  reminders          Reminder[]
+  vitals             PatientVital[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model User {
+  id            String         @id @default(uuid())
+  clinicId      String?
+  clinic        Clinic?        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          String         @default("RECEPTIONIST") // SUPERADMIN, CLINIC_ADMIN, DOCTOR, RECEPTIONIST, PATIENT
+  phone         String?
+  avatar        String?
+  isActive      Boolean        @default(true)
+  doctorProfile DoctorProfile?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model DoctorProfile {
+  id                  String        @id @default(uuid())
+  userId              String        @unique
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinicId            String
+  clinic              Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  specialization      String
+  qualifications      String
+  licenseNumber       String
+  consultationFee     Float         @default(500.0)
+  roomNumber          String?
+  bio                 String?
+  scheduleDays        String        @default("Monday,Tuesday,Wednesday,Thursday,Friday,Saturday")
+  slotDurationMinutes Int           @default(15)
+  startTime           String        @default("09:00")
+  endTime             String        @default("18:00")
+  appointments        Appointment[]
+  prescriptions       Prescription[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+}
+
+model Patient {
+  id                String         @id @default(uuid())
+  clinicId          String
+  clinic            Clinic         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientIdNumber   String
+  name              String
+  phone             String
+  email             String?
+  dob               String?
+  age               Int
+  gender            String         // MALE, FEMALE, OTHER
+  bloodGroup        String?
+  address           String?
+  emergencyContact  String?
+  allergies         String?
+  chronicConditions String?
+  medicalNotes      String?
+  appointments      Appointment[]
+  prescriptions     Prescription[]
+  invoices          Invoice[]
+  vitals            PatientVital[]
+  reminders         Reminder[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([clinicId, patientIdNumber])
+}
+
+model PatientVital {
+  id          String   @id @default(uuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  recordedAt  DateTime @default(now())
+  bpSystolic  Int?
+  bpDiastolic Int?
+  heartRate   Int?
+  temperature Float?
+  weight      Float?
+  height      Float?
+  bloodSugar  Float?
+  spo2        Int?
+  notes       String?
+}
+
+model Appointment {
+  id              String        @id @default(uuid())
+  clinicId        String
+  clinic          Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId        String
+  doctor          DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointmentDate String        // YYYY-MM-DD
+  timeSlot        String        // e.g. "10:30 AM"
+  tokenNumber     Int
+  type            String        @default("IN_PERSON") // IN_PERSON, FOLLOW_UP, EMERGENCY
+  status          String        @default("SCHEDULED") // SCHEDULED, CONFIRMED, WAITING, IN_CONSULTATION, COMPLETED, CANCELLED, NO_SHOW
+  reason          String?
+  notes           String?
+  prescription    Prescription?
+  invoices        Invoice[]
+  reminders       Reminder[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Prescription {
+  id               String             @id @default(uuid())
+  clinicId         String
+  clinic           Clinic             @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointmentId    String?            @unique
+  appointment      Appointment?       @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  patientId        String
+  patient          Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId         String
+  doctor           DoctorProfile      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  prescriptionDate DateTime           @default(now())
+  diagnosis        String
+  symptoms         String?
+  clinicalNotes    String?
+  advice           String?
+  followUpDate     String?
+  items            PrescriptionItem[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model PrescriptionItem {
+  id             String       @id @default(uuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicineName   String
+  dosage         String       // e.g. "500mg" or "1 tablet"
+  frequency      String       // e.g. "1-0-1", "Once daily", "TDS"
+  timing         String       // BEFORE_FOOD, AFTER_FOOD, WITH_FOOD, AS_NEEDED
+  duration       String       // e.g. "5 days"
+  instructions   String?      // e.g. "Take with warm water"
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  clinicId      String
+  clinic        Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId     String
+  patient       Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointmentId String?
+  appointment   Appointment?  @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  invoiceNumber String
+  date          DateTime      @default(now())
+  dueDate       DateTime?
+  subtotal      Float
+  discount      Float         @default(0.0)
+  tax           Float         @default(0.0)
+  total         Float
+  paidAmount    Float         @default(0.0)
+  balance       Float         @default(0.0)
+  status        String        @default("PENDING") // PENDING, PARTIAL, PAID, CANCELLED
+  paymentMethod String        @default("CASH") // CASH, CARD, UPI, INSURANCE
+  notes         String?
+  items         InvoiceItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([clinicId, invoiceNumber])
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  itemType    String   @default("CONSULTATION") // CONSULTATION, PROCEDURE, LAB_TEST, MEDICINE, OTHER
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+}
+
+model Reminder {
+  id                String   @id @default(uuid())
+  clinicId          String
+  clinic            Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId         String
+  patient           Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointmentId     String?
+  appointment       Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  channel           String   @default("WHATSAPP") // WHATSAPP, SMS
+  templateType      String   // CONFIRMATION, REMINDER_24H, QUEUE_ALERT, RX_READY, INVOICE
+  recipientPhone    String
+  messageBody       String
+  status            String   @default("SENT") // SENT, DELIVERED, PENDING, FAILED
+  sentAt            DateTime @default(now())
+  externalMessageId String?
+}
