@@ -32,8 +32,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
+// API Router supporting both '/api/*' and direct path rewrites
+const apiRouter = express.Router();
+
+apiRouter.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     platform: 'CuraPulse Smart Clinic Platform',
@@ -42,16 +44,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/patients', patientRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/doctors', doctorRoutes);
-app.use('/api/prescriptions', prescriptionRoutes);
-app.use('/api/billing', billingRoutes);
-app.use('/api/reminders', reminderRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/tenant', tenantRoutes);
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/patients', patientRoutes);
+apiRouter.use('/appointments', appointmentRoutes);
+apiRouter.use('/doctors', doctorRoutes);
+apiRouter.use('/prescriptions', prescriptionRoutes);
+apiRouter.use('/billing', billingRoutes);
+apiRouter.use('/reminders', reminderRoutes);
+apiRouter.use('/reports', reportRoutes);
+apiRouter.use('/tenant', tenantRoutes);
+
+app.use('/api', apiRouter);
+// Also support direct routing in serverless environments
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/assets')) {
+    return next();
+  }
+  // Try apiRouter if requested path matches an API endpoint
+  apiRouter(req, res, next);
+});
 
 // Serve frontend static build if present
 const frontendDist = path.resolve(__dirname, '../../frontend/dist');
@@ -77,6 +88,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 CuraPulse Smart Clinic API running at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 CuraPulse Smart Clinic API running at http://localhost:${PORT}`);
+  });
+}
+
+export default app;
+export { app };

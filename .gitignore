@@ -18,6 +18,7 @@ build/
 *.db-journal
 clinic.db
 clinic.db-journal
+!backend/prisma/clinic.db
 
 # Logs & debugging
 npm-debug.log*
